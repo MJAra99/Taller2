@@ -115,7 +115,7 @@ base_total <- bind_rows(lista_bases)
 # Ya con la base lista nos vamos a quedar sólo con las variables de interés
 base_final <- select(base_total, PERIODO, DIRECTORIO, SECUENCIA_P, ORDEN,
                      P3271, P3042, P6090, P6040, P6160, DPTO, FEX_C18, PT,
-                     PET, FT, FFT, P6240, OCI, RAMA2D_R4, P6430, INGLABO, DSI, MES)
+                     PET, FT, FFT, P6240, OCI, RAMA2D_R4, P6430, INGLABO, DSI)
 
 # Ajustamos fechas: hacemos esto para que R reconozca los meses de observaciones
 # con fechas (particulamente días) no convencionales como "20251252"
@@ -515,3 +515,4 @@ ggsave(
   dpi = 300,
   units = "in" #Unidades del tamaño
 )
+
