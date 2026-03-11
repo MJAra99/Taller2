@@ -217,8 +217,8 @@ tabla_indicadores_final$name <- c(
 
 
 colnames(tabla_indicadores_final) <- c( "Tasas (%) y poblaciones",
-  "Enero","Febrero","Marzo","Abril","Mayo","Junio",
-  "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
+  "Enero\n2025","Febrero\n2025","Marzo\n2025","Abril\n2025","Mayo\n2025","Junio\n2025",
+  "Julio\n2025","Agosto\n2025","Septiembre\n2025","Octubre\n2025","Noviembre\n2025","Diciembre\n2025"
 )
 
 View(tabla_indicadores_final)
@@ -515,4 +515,5 @@ ggsave(
   dpi = 300,
   units = "in" #Unidades del tamaño
 )
+
 
