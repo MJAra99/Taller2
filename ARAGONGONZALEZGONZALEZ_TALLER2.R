@@ -37,6 +37,7 @@ lapply(required_packages, library, character.only = TRUE)
 username <- Sys.getenv("USERNAME")
 
 # Construir ruta hacia los datos usando el usuario actual
+# Poner "Data/" en esta ruta, para que sea la única que cambie 
 path_taller <- paste0("C:/Users/", username, "/OneDrive/Documents/GitHub/MEcA/Taller R/Taller2")
 
 # Establecer directorio de trabajo
@@ -49,7 +50,10 @@ setwd(path_taller)
 # ---------- 1.1. Pegue de las bases de datos ----------
 
 bases <- c("Fuerza de trabajo.csv","Ocupados.csv","No ocupados.csv")
+bases_excep <- c("/Características generales, seguridad social en salud y  educación.csv",
+                 "Fuerza de trabajo.csv")
 lista_bases <- list()
+descrip <- data.frame(mes = 0, base = "",nobs = 0,nvar = 0)
 
 # Para cada mes, vamos a crear la base que conglomere las 4 bases de trabajo:
 #     1. Características generales, seguridad social en salud y educación.CSV
@@ -64,10 +68,19 @@ for (n in 1:12){
   # Usamos read_csv2 para indicarle a R que el separador es ";", locale para
   # decirle que lea tíldes y acentuaciones y col_types para que asuma que todos
   # los datos son tipo texto
-  base_main <- read_csv2(paste0("Data/GEIH_2025/",n,"/Características generales, seguridad social en salud y educación.csv"),
-                               locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
+  if (n !=8){
+    base_main <- read_csv2(paste0("GEIH_2025/",n,"/Características generales, seguridad social en salud y educación.csv"),
+                                locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
+    descrip <- bind_rows(descrip,data.frame(mes = n, base = "CAT",
+                                            nobs = nrow(base_main),nvar = ncol(base_main)))
   
-
+  } else{
+    base_main <- read_csv2(paste0("GEIH_2025/",n,bases_excep[1]),
+                           locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
+    descrip <- bind_rows(descrip,data.frame(mes = n, base = "CAT",
+                                            nobs = nrow(base_main),nvar = ncol(base_main)))
+    
+  }
   # Luego, creamos una llave que será con la que pegaremos las demás bases.
   # Esta llave es la información que caracteriza a una persona (ORDEN) en un 
   # hogar (SECUENCIA_P) dentro de una vivienda (DIRECTORIO)
@@ -76,12 +89,20 @@ for (n in 1:12){
   
   # Ahora creamos otro loop que haga para cada una de las bases a pegar (es
   # decir para las bases 2, 3 y 4):
-  for (i in bases){
+  for (i in 1:length(bases)){
     
     # Lea la base del mes
-    base_join <- read_csv2(paste0("Data/GEIH_2025/",n,"/",i),
-                      locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
-    
+    if ((n == 12) & (i==1)){
+      base_join <- read_csv2(paste0("GEIH_2025/",n,"/",bases_excep[2]),
+                             locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
+      descrip <- bind_rows(descrip,data.frame(mes = n, base = bases[i],
+                                              nobs = nrow(base_join),nvar = ncol(base_join)))
+    } else{
+      base_join <- read_csv2(paste0("GEIH_2025/",n,"/",bases[i]),
+                             locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
+      descrip <- bind_rows(descrip,data.frame(mes = n, base = bases[i],
+                                              nobs = nrow(base_join),nvar = ncol(base_join)))
+    }
     # Cree la llave que anteriormente describimos
     base_join <- mutate(base_join,LLAVE = paste0(DIRECTORIO, SECUENCIA_P, ORDEN))
     
@@ -92,6 +113,8 @@ for (n in 1:12){
     # Hacer un pegue de la base con el módulo básico dejando todas las observaciones
     # de esa base original (incluso si no tienen datos en la base que se está pegando)
     base_main <- base_main %>% left_join(base_join, by = "LLAVE")
+    
+    
   }
   
   # Finalmente nombra la base con el número del mes
@@ -109,8 +132,18 @@ for (n in 1:12){
 # Luego, con bind_rows apilamos todos los data frames (es decir unimos 
 # verticalmente las bases)
 
-## CAMBIÉ ESTO: base_total <- bind_rows(mget(paste0("base_", 1:12)))
 base_total <- bind_rows(lista_bases)
+
+# ---------- 1.2. Descripción general de los datos ----------
+
+# Completamos la tabla con la descripción de los datos y la exportamos a Excel
+
+descrip <- bind_rows(descrip,data.frame(mes = 2025, base = "Total",
+                                        nobs = nrow(base_total),nvar = ncol(base_total)))
+write_xlsx(descrip, "outputs/tablas/descripcionGEIH.xlsx")
+
+
+# ---------- 1.3. Selección de las variables relevantes para el análisis ----------
 
 # Ya con la base lista nos vamos a quedar sólo con las variables de interés
 base_final <- select(base_total, PERIODO, DIRECTORIO, SECUENCIA_P, ORDEN,
@@ -224,7 +257,7 @@ colnames(tabla_indicadores_final) <- c( "Tasas (%) y poblaciones",
 View(tabla_indicadores_final)
 
 # Finalmente, lo exportamos a Excel
-write_xlsx(tabla_indicadores_final, "Data/outputs/tablas/indicadores_mercado_laboral_2025.xlsx")
+write_xlsx(tabla_indicadores_final, "outputs/tablas/indicadores_mercado_laboral_2025.xlsx")
 
 
 # ---------- 2.2. Análisis de las tasas de mercado laboral ----------
@@ -318,7 +351,7 @@ p_doble_eje
 
 # Finalmente, guardamos la imagen en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_22_TGP_TO_TD.png",
+  filename = "outputs/graficos/grafico_22_TGP_TO_TD.png",
   plot = p_doble_eje, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
@@ -436,7 +469,7 @@ grafico_ramas_23
 
 # Finalmente, guardamos la imagen en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_23_N_personas_ocupadas_rama.png",
+  filename = "outputs/graficos/grafico_23_N_personas_ocupadas_rama.png",
   plot = grafico_ramas_23, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
@@ -508,7 +541,7 @@ grafico_pie_24
 
 # Finalmente, guardamos la imagen en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_24_personas_ocupadas_posicion.png",
+  filename = "outputs/graficos/grafico_24_personas_ocupadas_posicion.png",
   plot = grafico_pie_24, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
