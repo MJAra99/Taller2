@@ -18,7 +18,8 @@ rm(list = ls())
 
 # Instalación y carga de paquetes necesarios
 required_packages <- c("openxlsx", "ggplot2", "dplyr", "lubridate", "readr",
-                       "writexl", "tidyr")
+                       "writexl", "tidyr", "ggrepel", "geodata", "scales",
+                      "terra", "sf", "patchwork")
 
 # Función para instalar paquetes si no están instalados
 install_if_missing <- function(packages) {
@@ -49,6 +50,9 @@ setwd(path_taller)
 # ---------- 1.1. Pegue de las bases de datos ----------
 
 bases <- c("Fuerza de trabajo.csv","Ocupados.csv","No ocupados.csv")
+
+# Agosto y diciembre tienen bases con nombres diferentes (más espacios). Por ello,
+# las definimos para que R pueda leerlas correctamente.
 bases_excep <- c("/Características generales, seguridad social en salud y  educación.csv",
                  "Fuerza de trabajo.csv")
 lista_bases <- list()
@@ -68,13 +72,16 @@ for (n in 1:12){
   # decirle que lea tíldes y acentuaciones y col_types para que asuma que todos
   # los datos son tipo texto
   if (n !=8){
-    base_main <- read_csv2(paste0("GEIH_2025/",n,"/Características generales, seguridad social en salud y educación.csv"),
+    base_main <- read_csv2(paste0("Data/GEIH_2025/",n,"/Características generales, seguridad social en salud y educación.csv"),
                                 locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
+
+  # Agrege una linea más con la información descriptiva de esa base al data frame
+  # de "estadísticas descritivas"
     descrip <- bind_rows(descrip,data.frame(mes = n, base = "CAT",
                                             nobs = nrow(base_main),nvar = ncol(base_main)))
   
   } else{
-    base_main <- read_csv2(paste0("GEIH_2025/",n,bases_excep[1]),
+    base_main <- read_csv2(paste0("Data/GEIH_2025/",n,bases_excep[1]),
                            locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
     descrip <- bind_rows(descrip,data.frame(mes = n, base = "CAT",
                                             nobs = nrow(base_main),nvar = ncol(base_main)))
@@ -92,12 +99,12 @@ for (n in 1:12){
     
     # Lea la base del mes
     if ((n == 12) & (i==1)){
-      base_join <- read_csv2(paste0("GEIH_2025/",n,"/",bases_excep[2]),
+      base_join <- read_csv2(paste0("Data/GEIH_2025/",n,"/",bases_excep[2]),
                              locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
       descrip <- bind_rows(descrip,data.frame(mes = n, base = bases[i],
                                               nobs = nrow(base_join),nvar = ncol(base_join)))
     } else{
-      base_join <- read_csv2(paste0("GEIH_2025/",n,"/",bases[i]),
+      base_join <- read_csv2(paste0("Data/GEIH_2025/",n,"/",bases[i]),
                              locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
       descrip <- bind_rows(descrip,data.frame(mes = n, base = bases[i],
                                               nobs = nrow(base_join),nvar = ncol(base_join)))
@@ -111,6 +118,7 @@ for (n in 1:12){
     
     # Hacer un pegue de la base con el módulo básico dejando todas las observaciones
     # de esa base original (incluso si no tienen datos en la base que se está pegando)
+  
     base_main <- base_main %>% left_join(base_join, by = "LLAVE")
     
     
@@ -139,10 +147,29 @@ base_total <- bind_rows(lista_bases)
 
 descrip <- bind_rows(descrip,data.frame(mes = 2025, base = "Total",
                                         nobs = nrow(base_total),nvar = ncol(base_total)))
+
+
+# Cambiamos los nombres de los meses para una mejor interpretación
+descrip$mes <- c(
+  "0",
+  "Enero", "Enero", "Enero", "Enero",
+  "Febrero", "Febrero", "Febrero", "Febrero",
+  "Marzo", "Marzo", "Marzo", "Marzo",
+  "Abril", "Abril", "Abril", "Abril",
+  "Mayo", "Mayo", "Mayo", "Mayo",
+  "Junio", "Junio", "Junio", "Junio",
+  "Julio", "Julio", "Julio", "Julio",
+  "Agosto", "Agosto", "Agosto", "Agosto",
+  "Septiembre", "Septiembre", "Septiembre", "Septiembre",
+  "Octubre", "Octubre", "Octubre", "Octubre",
+  "Noviembre", "Noviembre", "Noviembre", "Noviembre",
+  "Diciembre", "Diciembre", "Diciembre", "Diciembre",
+  "Total Año 2025"
+)
+
 write_xlsx(descrip, "outputs/tablas/descripcionGEIH.xlsx")
 
 # Realizamos un par de gráficos para ilustrar lo encontrado
-
 # Filtro la base de categorías generales
 resumen_cat <- descrip %>% 
   filter(base=="CAT") %>% 
@@ -150,18 +177,24 @@ resumen_cat <- descrip %>%
 
 # Gráfico categorías generales
 grafico_obscg_12 <- ggplot(resumen_cat, aes(x = mes, y = nobs)) +
-  geom_bar(stat = "identity", width=0.5, fill="steelblue") +
+  geom_bar(stat = "identity", width=0.5, fill="darkblue") +
   labs(
     title = "Observaciones por mes - Características Generales",
     x = "Mes",
     y = "Número de observaciones",
     caption = "Fuente: DANE – GEIH 2025"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "none"
+  )
+
+grafico_obscg_12
 
 # Guardamos la imagen en formato PNG
 ggsave(
-  filename = "outputs/graficos/grafico_12_obscg.png",
+  filename = "Data/outputs/graficos/grafico_12_obscg.png",
   plot = grafico_obscg_12, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
