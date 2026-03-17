@@ -593,14 +593,29 @@ grafico_pie_24 <- ggplot(posicion_ocupacional,
   )
 grafico_pie_24
 
-# Finalmente, guardamos la imagen en formato PNG
+
+# Las unimos
+efectividad <- tiempo_buscando + gap_buscar_encontrar + 
+  plot_layout(ncol = 2, widths = c(2, 1)) & 
+  theme(plot.margin = margin(10, 10, 10, 10))
+
+efectividad
+
+# Finalmente, guardamos las imagenes en formato PNG
 ggsave(
-  filename = "outputs/graficos/grafico_24_personas_ocupadas_posicion.png",
-  plot = grafico_pie_24, #Gráfico a guardar
+  filename = "Data/outputs/graficos/grafico_35.2_gap_buscar_encontrar.png",
+  plot = gap_buscar_encontrar, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
   dpi = 300,
   units = "in" #Unidades del tamaño
 )
 
-
+ggsave(
+  filename = "Data/outputs/graficos/grafico_35.3_gap_buscar_encontrar.png",
+  plot = efectividad, #Gráfico a guardar
+  width = 10, #Tamaño
+  height = 6,
+  dpi = 300,
+  units = "in" #Unidades del tamaño
+)
