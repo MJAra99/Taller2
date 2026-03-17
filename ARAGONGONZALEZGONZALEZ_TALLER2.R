@@ -37,8 +37,7 @@ lapply(required_packages, library, character.only = TRUE)
 username <- Sys.getenv("USERNAME")
 
 # Construir ruta hacia los datos usando el usuario actual
-# Poner "Data/" en esta ruta, para que sea la única que cambie 
-path_taller <- paste0("C:/Users/", username, "/OneDrive/Documents/GitHub/MEcA/Taller R/Taller2")
+path_taller <- paste0("C:/Users/", username, "/OneDrive/Documents/GitHub/MEcA/Taller R/Taller2/Data")
 
 # Establecer directorio de trabajo
 setwd(path_taller)
@@ -142,6 +141,60 @@ descrip <- bind_rows(descrip,data.frame(mes = 2025, base = "Total",
                                         nobs = nrow(base_total),nvar = ncol(base_total)))
 write_xlsx(descrip, "outputs/tablas/descripcionGEIH.xlsx")
 
+# Realizamos un par de gráficos para ilustrar lo encontrado
+
+# Filtro la base de categorías generales
+resumen_cat <- descrip %>% 
+  filter(base=="CAT") %>% 
+  mutate(mes = factor(month.name[mes], levels = month.name))
+
+# Gráfico categorías generales
+grafico_obscg_12 <- ggplot(resumen_cat, aes(x = mes, y = nobs)) +
+  geom_bar(stat = "identity", width=0.5, fill="steelblue") +
+  labs(
+    title = "Observaciones por mes - Características Generales",
+    x = "Mes",
+    y = "Número de observaciones",
+    caption = "Fuente: DANE – GEIH 2025"
+  ) +
+  theme_minimal()
+
+# Guardamos la imagen en formato PNG
+ggsave(
+  filename = "outputs/graficos/grafico_12_obscg.png",
+  plot = grafico_obscg_12, #Gráfico a guardar
+  width = 10, #Tamaño
+  height = 6,
+  dpi = 300,
+  units = "in" #Unidades del tamaño
+)
+
+# Filtro la base de fuerza de trabajo
+resumen_ft <- descrip %>% 
+  filter(base %in% c("Ocupados.csv","No ocupados.csv")) %>% 
+  mutate(mes = factor(month.name[mes], levels = month.name))
+
+# Gráfico fuerza de trabajo
+grafico_obsft_12 <- ggplot(resumen_ft, aes(x = mes, y = nobs, fill=base)) +
+  geom_bar(stat = "identity", width=0.5) +
+  labs(
+    title = "Observaciones por mes - Fuerza de Trabajo",
+    x = "Mes",
+    y = "Número de observaciones",
+    caption = "Fuente: DANE – GEIH 2025"
+  ) +
+  theme_minimal()
+
+# Guardamos la imagen en formato PNG
+ggsave(
+  filename = "outputs/graficos/grafico_12_obsft.png",
+  plot = grafico_obsft_12, #Gráfico a guardar
+  width = 10, #Tamaño
+  height = 6,
+  dpi = 300,
+  units = "in" #Unidades del tamaño
+)
+
 
 # ---------- 1.3. Selección de las variables relevantes para el análisis ----------
 
@@ -160,6 +213,7 @@ base_final$anio <- year(base_final$PERIODO)
 # Convertimos todo a numérico
 base_final <- base_final %>%
   mutate(across(everything(), as.numeric))
+base_final$PERIODO <- as.Date(base_final$PERIODO)
 
 # Renombramos las variables para tener mejor manejo de la información
 base_final <- base_final %>%
