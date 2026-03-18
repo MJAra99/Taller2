@@ -908,11 +908,12 @@ grafico_bubbleplot_31 <- ggplot(bubble_data,
   
   labs(
     title = "Panorama por género sobre los retornos a la educación en el mercado laboral colombiano",
-    subtitle = "Promedio anual - GEIH 2025",
+    subtitle = "Promedio anual",
     x = "Nivel educativo",
     y = "Ingreso laboral promedio mensual (COP)",
     size = "Número de trabajadores",
-    color = "Género"
+    color = "Género",
+    caption = "Fuente: GEIH 2025 - DANE"
   ) +
   
   theme_minimal() +
@@ -1051,7 +1052,8 @@ grafico_part_fem <- ggplot(base_grafico_long, aes(x = porc_mujeres, y = ingreso,
     shape = "Ingreso",
     fill = "Ingreso",
     title = "Ingreso promedio vs. ingreso de mujeres por sector según participación femenina",
-    subtitle = "GEIH 2025 - Nivel nacional"
+    subtitle = "Nivel nacional",
+    caption = "Fuente: GEIH 2025 - DANE"
   ) +
   theme_minimal()+ 
   theme(
@@ -1142,7 +1144,8 @@ autoempleo_anual <- ggplot(colombia_map) +
   labs(
     fill = "% autoempleo como refugio",
     title = "Autoempleo como refugio frente a la falta de empleo formal",
-    subtitle = "GEIH 2025 - Nivel departamental"
+    subtitle = "Nivel departamental",
+    caption = "Fuente: GEIH 2025 - DANE"
   ) +
   theme_minimal() +
   theme(
@@ -1218,7 +1221,8 @@ autoempleo_refugio_trim <- ggplot(colombia_map_t) +
   labs(
     fill = "% Autoempleado ante el desempleo",
     title = "Evolución trimestral del autoempleo como refugio frente a la falta de empleo formal",
-    subtitle = "GEIH 2025 - Nivel departamental"
+    subtitle = "Nivel departamental",
+    caption = "Fuente: GEIH 2025 - DANE"
   ) +
   theme_minimal() +
   theme(
@@ -1251,7 +1255,8 @@ barras_autoemp_total <- autoempleo_totales %>%
   labs(
     x = "Departamento",
     y = "Total de personas en autoempleo",
-    title = "Total de personas en autoempleo por departamento"
+    title = "Total de personas en autoempleo por departamento",
+    caption = "Fuente: GEIH 2025 - DANE"
   ) +
   theme_minimal()
 
@@ -1343,7 +1348,8 @@ no_busco_empleo <- ggplot(motivos_no_busqueda, aes(x = pct_personas, y = reorder
     y = "Motivo por no buscar empleo",
     color = "Sexo",
     title = "Motivos por los que no buscó empleo el último mes",
-    subtitle = "GEIH 2025 - Población no ocupada"
+    subtitle = "Población no ocupada - Nivel Nacional",
+    caption = "Fuente: GEIH 2025 - DANE"
   ) +
   theme_minimal() +
   theme(
@@ -1416,7 +1422,8 @@ tiempo_buscando <- ggplot(colombia_timeline) +
   ) +
   labs(
     title = "Tiempo promedio buscando empleo por departamento",
-    subtitle = "GEIH 2025 - Población no ocupada",
+    subtitle = "Población no ocupada",
+    caption = "Fuente: GEIH 2025 - DANE"
     x = NULL, y = NULL
   ) +
   theme_minimal() +
@@ -1529,7 +1536,8 @@ gap_buscar_encontrar <- ggplot(comparacion, aes(x = reorder(canal, orden), y = p
     y = "Porcentaje",
     fill = "",
     title = "¿Cómo buscan empleo vs cómo realmente lo consiguen?",
-    subtitle = "GEIH 2025"
+    subtitle = "Nivel Nacional",
+    caption = "Fuente: GEIH 2025 - DANE"
   ) +
   
   theme_minimal() +
