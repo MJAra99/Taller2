@@ -72,14 +72,14 @@ for (n in 1:12){
   # decirle que lea tíldes y acentuaciones y col_types para que asuma que todos
   # los datos son tipo texto
   if (n !=8){
-    base_main <- read_csv2(paste0("Data/GEIH_2025/",n,"/Características generales, seguridad social en salud y educación.csv"),
+    base_main <- read_csv2(paste0("GEIH_2025/",n,"/Características generales, seguridad social en salud y educación.csv"),
                                 locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
 
     descrip <- bind_rows(descrip,data.frame(mes = n, base = "CAT",
                                             nobs = nrow(base_main),nvar = ncol(base_main)))
   
   } else{
-    base_main <- read_csv2(paste0("Data/GEIH_2025/",n,bases_excep[1]),
+    base_main <- read_csv2(paste0("GEIH_2025/",n,bases_excep[1]),
                            locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
     descrip <- bind_rows(descrip,data.frame(mes = n, base = "CAT",
                                             nobs = nrow(base_main),nvar = ncol(base_main)))
@@ -97,7 +97,7 @@ for (n in 1:12){
     
     # Lea la base del mes
     if ((n == 12) & (i==1)){
-      base_join <- read_csv2(paste0("Data/GEIH_2025/",n,"/",bases_excep[2]),
+      base_join <- read_csv2(paste0("GEIH_2025/",n,"/",bases_excep[2]),
                              locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
 
       #  Agregue una línea más con la información descriptiva de esa base al data frame
@@ -105,7 +105,7 @@ for (n in 1:12){
       descrip <- bind_rows(descrip,data.frame(mes = n, base = bases[i],
                                               nobs = nrow(base_join),nvar = ncol(base_join)))
     } else{
-      base_join <- read_csv2(paste0("Data/GEIH_2025/",n,"/",bases[i]),
+      base_join <- read_csv2(paste0("GEIH_2025/",n,"/",bases[i]),
                              locale = locale(encoding = "latin1"), col_types = cols(.default = "c"))
       descrip <- bind_rows(descrip,data.frame(mes = n, base = bases[i],
                                               nobs = nrow(base_join),nvar = ncol(base_join)))
@@ -169,7 +169,7 @@ descrip_final$mes <- c(
   "Total Año 2025"
 )
 
-write_xlsx(descrip_final, "Data/outputs/tablas/descripcionGEIH.xlsx")
+write_xlsx(descrip_final, "outputs/tablas/descripcionGEIH.xlsx")
 
 # Realizamos un par de gráficos para ilustrar lo encontrado
 # Filtro la base de categorías generales
@@ -200,7 +200,7 @@ grafico_obscg_12
 
 # Guardamos la imagen en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_12_obscg.png",
+  filename = "outputs/graficos/grafico_12_obscg.png",
   plot = grafico_obscg_12, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
@@ -233,7 +233,7 @@ grafico_obsft_12
 
 # Guardamos la imagen en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_12_obsft.png",
+  filename = "outputs/graficos/grafico_12_obsft.png",
   plot = grafico_obsft_12, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
@@ -357,7 +357,7 @@ colnames(tabla_indicadores_final) <- c( "Tasas (%) y poblaciones",
 View(tabla_indicadores_final)
 
 # Finalmente, lo exportamos a Excel
-write_xlsx(tabla_indicadores_final, "Data/outputs/tablas/indicadores_mercado_laboral_2025.xlsx")
+write_xlsx(tabla_indicadores_final, "outputs/tablas/indicadores_mercado_laboral_2025.xlsx")
 
 
 # ---------- 2.2. Análisis de las tasas de mercado laboral ----------
@@ -451,7 +451,7 @@ p_doble_eje
 
 # Finalmente, guardamos la imagen en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_22_TGP_TO_TD.png",
+  filename = "outputs/graficos/grafico_22_TGP_TO_TD.png",
   plot = p_doble_eje, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
@@ -569,7 +569,7 @@ grafico_ramas_23
 
 # Finalmente, guardamos la imagen en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_23_N_personas_ocupadas_rama.png",
+  filename = "outputs/graficos/grafico_23_N_personas_ocupadas_rama.png",
   plot = grafico_ramas_23, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
@@ -674,7 +674,7 @@ grafico_pie_24
 
 # Finalmente, guardamos la imagen en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_24_personas_ocupadas_posicion.png",
+  filename = "outputs/graficos/grafico_24_personas_ocupadas_posicion.png",
   plot = grafico_pie_24, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
@@ -929,7 +929,7 @@ grafico_bubbleplot_31
 
 # Finalmente, guardamos la imagen en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_31_retornor_educacion_genero.png",
+  filename = "outputs/graficos/grafico_31_retornor_educacion_genero.png",
   plot = grafico_bubbleplot_31, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
@@ -1064,7 +1064,7 @@ grafico_part_fem
 
 # Finalmente, guardamos la imagen en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_32_ingresos_y_participacion_femenina.png",
+  filename = "outputs/graficos/grafico_32_ingresos_y_participacion_femenina.png",
   plot = grafico_part_fem, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
@@ -1267,7 +1267,7 @@ autoempleo_2
 
 # Finalmente, guardamos las imagenes en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_33_autoempleo_como_refugio.png",
+  filename = "outputs/graficos/grafico_33_autoempleo_como_refugio.png",
   plot = autoempleo_refugio_trim, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
@@ -1277,7 +1277,7 @@ ggsave(
 
 
 ggsave(
-  filename = "Data/outputs/graficos/grafico_33.2_autoempleo_map+barras.png",
+  filename = "outputs/graficos/grafico_33.2_autoempleo_map+barras.png",
   plot = autoempleo_2,
   width = 16,      # un poco más ancho para balancear mapa+barras
   height = 7,      # altura suficiente para las facetas
@@ -1357,7 +1357,7 @@ no_busco_empleo
 
 # Finalmente, guardamos la imagen en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_34_no_busco_empleo.png",
+  filename = "outputs/graficos/grafico_34_no_busco_empleo.png",
   plot = no_busco_empleo, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
@@ -1431,7 +1431,7 @@ tiempo_buscando
 
 # Finalmente, guardamos la imagen en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_35_tiempo_buscando.png",
+  filename = "outputs/graficos/grafico_35_tiempo_buscando.png",
   plot = tiempo_buscando, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
@@ -1547,7 +1547,7 @@ gap_buscar_encontrar
 
 # Finalmente, guardamos la imagen en formato PNG
 ggsave(
-  filename = "Data/outputs/graficos/grafico_35.2_gap_buscar_encontrar.png",
+  filename = "outputs/graficos/grafico_35.2_gap_buscar_encontrar.png",
   plot = gap_buscar_encontrar, #Gráfico a guardar
   width = 10, #Tamaño
   height = 6,
